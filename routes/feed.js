@@ -4,22 +4,29 @@ const { body } = require("express-validator")
 const router = express.Router();
 
 const feedController = require("../controller/feed");
+const isAuth = require("../middleware/is-auth");
 
-router.get("/posts", feedController.getPosts);
+router.get("/posts", isAuth, feedController.getPosts);
+
+router.get("/status", isAuth, feedController.getStatus);
+
+router.get("/post/:postId", isAuth, feedController.getPost);
 
 router.post("/posts", [
     body('title').trim().isLength({ min: 5 }),
     body('content').trim().isLength({ min: 5 })
-], feedController.createPost);
+], isAuth, feedController.createPost);
 
-router.get("/post/:postId", feedController.getPost);
 
 router.put("/updatePost/:postId", [
     body('title').trim().isLength({ min: 5 }),
     body('content').trim().isLength({ min: 5 })
-], feedController.updatePost);
+], isAuth, feedController.updatePost);
 
+router.put("/updateStatus", [
+    body('statusData').trim()
+], isAuth, feedController.updateStatus);
 
-router.delete("/deletePost/:postId", feedController.deletePost);
+router.delete("/deletePost/:postId", isAuth, feedController.deletePost);
 
 module.exports = router;
